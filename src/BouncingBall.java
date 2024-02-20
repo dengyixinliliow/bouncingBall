@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -6,7 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
 
-public class BouncingBall extends JPanel implements KeyListener {
+public class BouncingBall extends JPanel implements KeyListener, MouseListener {
     private static final int BOX_WIDTH = 640;
     private static final int BOX_HEIGHT = 480;
     private static final int UPDATE_RATE = 30; // Number of refresh per second
@@ -18,17 +20,14 @@ public class BouncingBall extends JPanel implements KeyListener {
         this.setPreferredSize(new Dimension(BOX_WIDTH, BOX_HEIGHT));
         container = new Container(BOX_HEIGHT, BOX_WIDTH, Color.BLACK);
         balls = new ArrayList<>();
-        Ball ball1 = new Ball(80, 0, 0, Color.PINK, container.getWIDTH(), container.getHEIGHT(), 1, 2);
-        Ball ball2 = new Ball(60, 10, 10, Color.BLUE, container.getWIDTH(), container.getHEIGHT(), 2, 2);
-        Ball ball3 = new Ball(80, 0, 0, Color.WHITE, container.getWIDTH(), container.getHEIGHT(), 3, 2);
-        Ball ball4 = new Ball(60, 10, 10, Color.ORANGE, container.getWIDTH(), container.getHEIGHT(), 2, 1);
+        Ball ball1 = new Ball(30, 0, 0, Color.PINK, container.getWIDTH(), container.getHEIGHT(), 1, 2);
+        Ball ball2 = new Ball(30, 10, 10, Color.BLUE, container.getWIDTH(), container.getHEIGHT(), 2, 2);
         balls.add(ball1);
         balls.add(ball2);
-        balls.add(ball3);
-        balls.add(ball4);
 
         setFocusable(true);
         addKeyListener(this);
+        addMouseListener(this);
 
         Thread gameThread = new Thread() {
             public void run() {
@@ -65,18 +64,48 @@ public class BouncingBall extends JPanel implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            Random rand = new Random();
-            // Java 'Color' class takes 3 floats, from 0 to 1.
-            float red = rand.nextFloat();
-            float green = rand.nextFloat();
-            float blue = rand.nextFloat();
-            Color randomColor = new Color(red, green, blue);
-            Ball newBall = new Ball(40, 5, 5, randomColor, container.getWIDTH(), container.getHEIGHT(), 2, 2);
+            Ball newBall = new Ball(30, container.getWIDTH(), container.getHEIGHT());
             balls.add(newBall);
+        } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (!balls.isEmpty()) {
+                Random random = new Random();
+                // Generate a random index within the range of the list size
+                int randomIndex = random.nextInt(balls.size());
+                balls.remove(randomIndex);
+            }
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        int mouseX = e.getX();
+        int mouseY = e.getY();
+        for (Ball ball : balls) {
+            if (ball.isPointInsideBall(mouseX, mouseY)) {
+                ball.grow();
+                repaint();
+                return; // Exit the method after growing the first clicked ball
+            }
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
     }
 }
