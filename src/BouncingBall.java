@@ -56,12 +56,13 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
                     try {
                         Thread.sleep(1000 / UPDATE_RATE);
                     } catch (InterruptedException ex) {
+                        ex.printStackTrace();
                     }
                 }
             }
         };
 
-        Thread test = new Thread() {
+        Thread processThread = new Thread() {
             public void run() {
                 while(true) {
                     try {
@@ -104,13 +105,14 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
                     try {
                         Thread.sleep(3000);
                     } catch (InterruptedException ex) {
+                        ex.printStackTrace();
                     }
                 }
             }
         };
 
         gameThread.start();
-        test.start();
+        processThread.start();
     }
 
     @Override
