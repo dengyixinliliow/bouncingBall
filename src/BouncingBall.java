@@ -20,14 +20,14 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
     private List<Ball> balls;
     private ArrayList<Obstacle> obstacles;
     private double averageCpuUsage = 0.0;
-    private Color backgroundColor = Color.PINK;
+    private Color backgroundColor = Color.ORANGE;
 
     public BouncingBall() {
         this.setPreferredSize(new Dimension(BOX_WIDTH, BOX_HEIGHT));
         CONTAINER = new Container(BOX_HEIGHT, BOX_WIDTH, backgroundColor);
         balls = new ArrayList<>();
-        Ball ball1 = new Ball(30, 0, 0, Color.ORANGE, CONTAINER.getWIDTH(), CONTAINER.getHEIGHT(), 1, 2);
-        Ball ball2 = new Ball(50, 0, 0, Color.BLUE, CONTAINER.getWIDTH(), CONTAINER.getHEIGHT(), 2, 2);
+        Ball ball1 = new Ball(30, 0, 0, Color.PINK, CONTAINER.getWIDTH(), CONTAINER.getHEIGHT(), 1, 2);
+        Ball ball2 = new Ball(30, 200, 0, Color.BLUE, CONTAINER.getWIDTH(), CONTAINER.getHEIGHT(), 2, 2);
         balls.add(ball1);
         balls.add(ball2);
 
@@ -124,6 +124,10 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
         for (Obstacle o : obstacles) {
             o.paintObstacle(g);
         }
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Courier New", Font.BOLD, 20));
+        String cpuUsageInfo = String.valueOf(averageCpuUsage);
+        g.drawString("Current average CPU usage: " + cpuUsageInfo, 30, 50);
     }
 
     @Override

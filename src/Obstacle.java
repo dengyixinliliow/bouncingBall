@@ -5,7 +5,7 @@ public class Obstacle {
     private final int HEIGHT;
     private final int X;
     private final int Y;
-    private final Color COLOR = Color.RED;
+    private final Color COLOR = Color.black;
 
     public Obstacle(int x, int y, int width, int height) {
         this.X = x;
