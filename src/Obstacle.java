@@ -35,6 +35,10 @@ public class Obstacle {
         return false;
     }
 
+    public boolean isInside(int x, int y) {
+        return x >= X && x <= X + WIDTH && y >= Y && y <= Y + HEIGHT;
+    }
+
     public void paintObstacle(Graphics g) {
         g.setColor(this.COLOR);
         g.fillRect(this.X, this.Y, this.WIDTH, this.HEIGHT);

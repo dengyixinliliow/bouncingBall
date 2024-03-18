@@ -109,7 +109,6 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
             }
         };
 
-
         gameThread.start();
         test.start();
     }
@@ -157,6 +156,19 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
                 return; // Exit the method after growing the first clicked ball
             }
         }
+
+        Iterator<Obstacle> iterator = obstacles.iterator();
+        while (iterator.hasNext()) {
+            Obstacle ob = iterator.next();
+            if (ob.isInside(mouseX, mouseY)) {
+                iterator.remove();
+                repaint();
+                return;
+            }
+        }
+
+        obstacles.add(new Obstacle(mouseX, mouseY, 80, 150));
+        repaint();
     }
 
     @Override
