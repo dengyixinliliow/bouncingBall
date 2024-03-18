@@ -1,42 +1,34 @@
 import java.awt.*;
 
 public class Obstacle {
-    private final int width;
-    private final int height;
-
-    private final int x;
-    private final int y;
-
-    private final Color color = Color.red;
+    private final int WIDTH;
+    private final int HEIGHT;
+    private final int X;
+    private final int Y;
+    private final Color COLOR = Color.RED;
 
     public Obstacle(int x, int y, int width, int height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+        this.X = x;
+        this.Y = y;
+        this.WIDTH = width;
+        this.HEIGHT = height;
     }
 
     public boolean inObstacle(int radius, int ballX, int ballY) {
-        int xMin = x - width/2;
-        int xMax = x + width/2;
-        int yMin = y - height/2;
-        int yMax = y + height/2;
+        int xMin = X;
+        int xMax = X + WIDTH;
+        int yMin = Y;
+        int yMax = Y + HEIGHT;
 
         int ballMinX = ballX - radius;
         int ballMaxX = ballX + radius;
         int ballMinY = ballY - radius;
         int ballMaxY = ballY + radius;
 
-        if (ballMinX >= xMin && ballMinX <= xMax) {
+        if (ballMinX >= xMin && ballMinX <= xMax && (ballMinY >= yMin && ballMinY <= yMax || ballMaxY >= yMin && ballMaxY <= yMax)) {
             return true;
         }
-        if (ballMaxX >= xMin && ballMinX >= xMax) {
-            return true;
-        }
-        if (ballMinY >= yMin && ballMinY <= yMax) {
-            return true;
-        }
-        if (ballMaxY >= yMin && ballMinY >= yMax) {
+        if (ballMaxX >= xMin && ballMaxX <= xMax && (ballMinY >= yMin && ballMinY <= yMax || ballMaxY >= yMin && ballMaxY <= yMax)) {
             return true;
         }
 
@@ -44,8 +36,8 @@ public class Obstacle {
     }
 
     public void paintObstacle(Graphics g) {
-        g.setColor(this.color);
-        g.fillRect(this.x, this.y, this.width, this.height);
+        g.setColor(this.COLOR);
+        g.fillRect(this.X, this.Y, this.WIDTH, this.HEIGHT);
     }
 
 }

@@ -3,12 +3,12 @@ import java.awt.*;
 public class Container {
     private final int HEIGHT;
     private final int WIDTH;
-    private final Color BACKGROUNDCOLOR;
+    private Color backgroundColor;
 
     public Container(int height, int width, Color backgroundColor) {
         this.HEIGHT = height;
         this.WIDTH = width;
-        this.BACKGROUNDCOLOR = backgroundColor;
+        this.backgroundColor = backgroundColor;
     }
 
     public int getHEIGHT() {
@@ -20,7 +20,11 @@ public class Container {
     }
 
     public void paintContainer(Graphics g) {
-        g.setColor(BACKGROUNDCOLOR);
+        g.setColor(backgroundColor);
         g.fillRect(0, 0, WIDTH, HEIGHT);
+    }
+
+    public void changeColor( Color color) {
+        backgroundColor = color;
     }
 }

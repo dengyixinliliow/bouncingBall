@@ -16,22 +16,24 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
     private static final int BOX_HEIGHT = 680;
     private static final int UPDATE_RATE = 30; // Number of refresh per second
 
-    private final Container container;
+    private final Container CONTAINER;
     private List<Ball> balls;
     private ArrayList<Obstacle> obstacles;
+    private double averageCpuUsage = 0.0;
+    private Color backgroundColor = Color.PINK;
 
     public BouncingBall() {
         this.setPreferredSize(new Dimension(BOX_WIDTH, BOX_HEIGHT));
-        container = new Container(BOX_HEIGHT, BOX_WIDTH, Color.BLACK);
+        CONTAINER = new Container(BOX_HEIGHT, BOX_WIDTH, backgroundColor);
         balls = new ArrayList<>();
-        Ball ball1 = new Ball(30, 0, 0, Color.PINK, container.getWIDTH(), container.getHEIGHT(), 1, 2);
-        Ball ball2 = new Ball(30, 500, 10, Color.BLUE, container.getWIDTH(), container.getHEIGHT(), 2, 2);
+        Ball ball1 = new Ball(30, 0, 0, Color.ORANGE, CONTAINER.getWIDTH(), CONTAINER.getHEIGHT(), 1, 2);
+        Ball ball2 = new Ball(50, 0, 0, Color.BLUE, CONTAINER.getWIDTH(), CONTAINER.getHEIGHT(), 2, 2);
         balls.add(ball1);
         balls.add(ball2);
 
         obstacles = new ArrayList<>();
-        Obstacle o1 = new Obstacle(40, 100, 40, 80);
-        Obstacle o2 = new Obstacle(800, 150, 40, 80);
+        Obstacle o1 = new Obstacle(400, 100, 80, 150);
+        Obstacle o2 = new Obstacle(200, 150, 80, 150);
         obstacles.add(o1);
         obstacles.add(o2);
 
@@ -83,9 +85,16 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
                             count++;
                         }
 
-                        double averageCpuUsage = totalCpuUsage / count;
+                        if ((totalCpuUsage / count) > averageCpuUsage) {
+                            backgroundColor = backgroundColor.darker();
+                            CONTAINER.changeColor(backgroundColor);
+                        } else {
+                            backgroundColor = backgroundColor.brighter();
+                            CONTAINER.changeColor(backgroundColor);
+                        }
+                        averageCpuUsage = totalCpuUsage / count;
                         System.out.println("Average CPU Usage: " + averageCpuUsage + "%");
-
+                        repaint();
                         // Wait for the process to exit
                         process.waitFor();
                     } catch (IOException | InterruptedException e) {
@@ -93,7 +102,7 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
                     }
 
                     try {
-                        Thread.sleep(10000);
+                        Thread.sleep(3000);
                     } catch (InterruptedException ex) {
                     }
                 }
@@ -108,18 +117,13 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-        container.paintContainer(g);
+        CONTAINER.paintContainer(g);
         for (Ball ball : balls) {
             ball.paintBall(g);
         }
-
         for (Obstacle o : obstacles) {
             o.paintObstacle(g);
         }
-
-
-
     }
 
     @Override
@@ -129,7 +133,7 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            Ball newBall = new Ball(30, container.getWIDTH(), container.getHEIGHT());
+            Ball newBall = new Ball(30, CONTAINER.getWIDTH(), CONTAINER.getHEIGHT());
             balls.add(newBall);
         }
     }
