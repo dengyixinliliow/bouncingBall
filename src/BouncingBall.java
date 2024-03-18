@@ -6,24 +6,34 @@ import java.util.List;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Random;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Iterator;
 
 public class BouncingBall extends JPanel implements KeyListener, MouseListener {
-    private static final int BOX_WIDTH = 640;
-    private static final int BOX_HEIGHT = 480;
+    private static final int BOX_WIDTH = 840;
+    private static final int BOX_HEIGHT = 680;
     private static final int UPDATE_RATE = 30; // Number of refresh per second
 
     private final Container container;
     private List<Ball> balls;
+    private ArrayList<Obstacle> obstacles;
 
     public BouncingBall() {
         this.setPreferredSize(new Dimension(BOX_WIDTH, BOX_HEIGHT));
         container = new Container(BOX_HEIGHT, BOX_WIDTH, Color.BLACK);
         balls = new ArrayList<>();
         Ball ball1 = new Ball(30, 0, 0, Color.PINK, container.getWIDTH(), container.getHEIGHT(), 1, 2);
-        Ball ball2 = new Ball(30, 10, 10, Color.BLUE, container.getWIDTH(), container.getHEIGHT(), 2, 2);
+        Ball ball2 = new Ball(30, 500, 10, Color.BLUE, container.getWIDTH(), container.getHEIGHT(), 2, 2);
         balls.add(ball1);
         balls.add(ball2);
+
+        obstacles = new ArrayList<>();
+        Obstacle o1 = new Obstacle(40, 100, 40, 80);
+        Obstacle o2 = new Obstacle(800, 150, 40, 80);
+        obstacles.add(o1);
+        obstacles.add(o2);
 
         setFocusable(true);
         addKeyListener(this);
@@ -32,8 +42,13 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
         Thread gameThread = new Thread() {
             public void run() {
                 while (true) {
-                    for (Ball ball : balls) {
-                        ball.moveOneStep();
+                    Iterator<Ball> iterator = balls.iterator();
+                    while (iterator.hasNext()) {
+                        Ball ball = iterator.next();
+                        if (!ball.moveOneStep(obstacles)) {
+                            System.out.println("Ball removed!!");
+                            iterator.remove(); // Use iterator to remove the ball safely
+                        }
                     }
                     repaint();
                     try {
@@ -43,7 +58,51 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
                 }
             }
         };
+
+        Thread test = new Thread() {
+            public void run() {
+                while(true) {
+                    try {
+                        // Execute the ps command
+                        Process process = new ProcessBuilder("ps", "-A", "-o", "%cpu").start();
+
+                        // Read the output of the command
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                        String line;
+                        double totalCpuUsage = 0;
+                        int count = 0;
+
+                        reader.readLine();
+
+                        // Read each line of the output and calculate total CPU usage
+                        while ((line = reader.readLine()) != null) {
+                            // Each line contains the CPU usage of a process, which can be a fraction
+                            // Convert it to a percentage by multiplying by 100
+                            double cpuUsage = Double.parseDouble(line.trim()) * 100;
+                            totalCpuUsage += cpuUsage;
+                            count++;
+                        }
+
+                        double averageCpuUsage = totalCpuUsage / count;
+                        System.out.println("Average CPU Usage: " + averageCpuUsage + "%");
+
+                        // Wait for the process to exit
+                        process.waitFor();
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException ex) {
+                    }
+                }
+            }
+        };
+
+
         gameThread.start();
+        test.start();
     }
 
     @Override
@@ -54,6 +113,12 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
         for (Ball ball : balls) {
             ball.paintBall(g);
         }
+
+        for (Obstacle o : obstacles) {
+            o.paintObstacle(g);
+        }
+
+
 
     }
 
@@ -66,13 +131,6 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             Ball newBall = new Ball(30, container.getWIDTH(), container.getHEIGHT());
             balls.add(newBall);
-        } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            if (!balls.isEmpty()) {
-                Random random = new Random();
-                // Generate a random index within the range of the list size
-                int randomIndex = random.nextInt(balls.size());
-                balls.remove(randomIndex);
-            }
         }
     }
 
@@ -86,7 +144,7 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
         int mouseY = e.getY();
         for (Ball ball : balls) {
             if (ball.isPointInsideBall(mouseX, mouseY)) {
-                ball.grow();
+                ball.changeColor();
                 repaint();
                 return; // Exit the method after growing the first clicked ball
             }
