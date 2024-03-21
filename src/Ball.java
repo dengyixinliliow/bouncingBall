@@ -25,6 +25,22 @@ public class Ball {
         this.speedY = speedY;
     }
 
+    public Ball(int radius, int ballPositionX, int ballPositionY, Color color, int maxX, int maxY) {
+        Random rand = new Random();
+
+        int randomSpeedX = rand.nextInt(15 - 1) + 1;
+        int randomSpeedY = rand.nextInt(15 - 1) + 1;
+
+        this.radius = radius;
+        this.ballPositionX = ballPositionX;
+        this.ballPositionY = ballPositionY;
+        this.ballColor = color;
+        this.MAXX = maxX;
+        this.MAXY = maxY;
+        this.speedX = randomSpeedX;
+        this.speedY = randomSpeedY;
+    }
+
     public Ball(int radius, int maxX, int maxY) {
         Random rand = new Random();
         float red = rand.nextFloat();
@@ -56,8 +72,21 @@ public class Ball {
     }
 
     public void paintBall(Graphics g) {
-        g.setColor(ballColor);
-        g.fillOval(ballPositionX - radius, ballPositionY - radius, 2 * radius, 2 * radius);
+        // Calculate the positions for gradient
+        int startX = ballPositionX - radius;
+        int startY = ballPositionY - radius;
+        int endX = ballPositionX + radius;
+        int endY = ballPositionY + radius;
+
+        // Define gradient colors
+        Color startColor = ballColor.brighter(); // Lighter color for highlight
+        Color endColor = ballColor.darker(); // Darker color for shadow
+
+        // Draw gradient fill
+        GradientPaint gradientPaint = new GradientPaint(startX, startY, startColor, endX, endY, endColor);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setPaint(gradientPaint);
+        g2d.fillOval(startX, startY, 2 * radius, 2 * radius);
     }
 
     public boolean moveOneStep(ArrayList<Obstacle> obs) {
@@ -92,15 +121,19 @@ public class Ball {
         return distance <= radius;
     }
 
-    public void grow() {
-        radius += 5; // Increase the radius by 5 units
+    public boolean collideWithOtherBall(Ball otherBall) {
+        double distance = Math.sqrt(Math.pow(otherBall.ballPositionX - this.ballPositionX, 2) +
+                Math.pow(otherBall.ballPositionY - this.ballPositionY, 2));
+        return distance <= (this.radius + otherBall.radius);
     }
 
-    public int getSpeedX() {
-        return this.speedX;
+    public Color getColor() { return this.ballColor; }
+
+    public int getBallPositionX() {
+        return this.ballPositionX;
     }
 
-    public int getSpeedY() {
-        return this.speedY;
+    public int getBallPositionY() {
+        return this.ballPositionY;
     }
 }

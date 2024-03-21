@@ -5,7 +5,7 @@ public class Obstacle {
     private final int HEIGHT;
     private final int X;
     private final int Y;
-    private final Color COLOR = Color.black;
+    private final Color COLOR = Color.GRAY;
 
     public Obstacle(int x, int y, int width, int height) {
         this.X = x;
@@ -40,8 +40,17 @@ public class Obstacle {
     }
 
     public void paintObstacle(Graphics g) {
-        g.setColor(this.COLOR);
-        g.fillRect(this.X, this.Y, this.WIDTH, this.HEIGHT);
+        // Define colors for the rectangle and its shadow
+        Color rectangleColor = COLOR.darker();
+        Color shadowColor = new Color(0, 0, 0, 80); // Semi-transparent black for the shadow
+
+        // Draw the shadow first
+        g.setColor(shadowColor);
+        g.fillRect(X + 4, Y + 4, WIDTH, HEIGHT); // Adjust the shadow position
+
+        // Then draw the actual rectangle
+        g.setColor(rectangleColor);
+        g.fillRect(X, Y, WIDTH, HEIGHT);
     }
 
 }

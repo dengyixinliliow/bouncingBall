@@ -32,8 +32,8 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
         balls.add(ball2);
 
         obstacles = new ArrayList<>();
-        Obstacle o1 = new Obstacle(400, 100, 80, 150);
-        Obstacle o2 = new Obstacle(200, 150, 80, 150);
+        Obstacle o1 = new Obstacle(400, 100, 50, 90);
+        Obstacle o2 = new Obstacle(200, 150, 50, 90);
         obstacles.add(o1);
         obstacles.add(o2);
 
@@ -48,10 +48,29 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
                     while (iterator.hasNext()) {
                         Ball ball = iterator.next();
                         if (!ball.moveOneStep(obstacles)) {
-                            System.out.println("Ball removed!!");
                             iterator.remove(); // Use iterator to remove the ball safely
                         }
                     }
+
+                    List<Ball> ballsToRemove = new ArrayList<>(); // List to store balls to remove
+                    List<Ball> ballsToAdd = new ArrayList<>();
+                    for (int i = 0; i < balls.size(); i++) {
+                        Ball ball1 = balls.get(i);
+                        for (int j = i + 1; j < balls.size(); j++) {
+                            Ball ball2 = balls.get(j);
+                            if (ball1 != ball2 && ball1.collideWithOtherBall(ball2)) {
+                                ballsToRemove.add(ball1);
+                                ballsToRemove.add(ball2);
+                                int newX = (ball1.getBallPositionX() + ball2.getBallPositionX()) / 2;
+                                int newY = (ball1.getBallPositionY() + ball2.getBallPositionY()) / 2;
+                                Ball newBall = new Ball(30, newX, newY, mixColors(ball1.getColor(), ball2.getColor()), CONTAINER.getWIDTH(), CONTAINER.getHEIGHT());
+                                ballsToAdd.add(newBall);
+                            }
+                        }
+                    }
+
+                    balls.removeAll(ballsToRemove); // Remove collided balls from the main list
+                    balls.addAll(ballsToAdd);
                     repaint();
                     try {
                         Thread.sleep(1000 / UPDATE_RATE);
@@ -87,10 +106,10 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
                         }
 
                         if ((totalCpuUsage / count) > averageCpuUsage) {
-                            backgroundColor = backgroundColor.darker();
+                            backgroundColor = backgroundColor.brighter();
                             CONTAINER.changeColor(backgroundColor);
                         } else {
-                            backgroundColor = backgroundColor.brighter();
+                            backgroundColor = backgroundColor.darker();
                             CONTAINER.changeColor(backgroundColor);
                         }
                         averageCpuUsage = totalCpuUsage / count;
@@ -169,7 +188,7 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
             }
         }
 
-        obstacles.add(new Obstacle(mouseX, mouseY, 80, 150));
+        obstacles.add(new Obstacle(mouseX, mouseY, 50, 90));
         repaint();
     }
 
@@ -187,5 +206,13 @@ public class BouncingBall extends JPanel implements KeyListener, MouseListener {
 
     @Override
     public void mouseExited(MouseEvent e) {
+    }
+
+    public static Color mixColors(Color color1, Color color2) {
+        int red = (color1.getRed() + color2.getRed()) / 2;
+        int green = (color1.getGreen() + color2.getGreen()) / 2;
+        int blue = (color1.getBlue() + color2.getBlue()) / 2;
+
+        return new Color(red, green, blue);
     }
 }
