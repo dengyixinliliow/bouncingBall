@@ -1,5 +1,5 @@
-# Bouncing Ball tet
-
+# Bouncing Ball
+ yes
 ## Features
 In this small bouncing ball program, the user can add balls by press space key,
 and change the color of a ball by clicking on it. Besides, there are obstacles 
