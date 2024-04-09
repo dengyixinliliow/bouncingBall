@@ -1,4 +1,4 @@
-# Bouncing Ball test
+# Bouncing Ball tet
 
 ## Features
 In this small bouncing ball program, the user can add balls by press space key,
